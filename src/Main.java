@@ -10,15 +10,23 @@ public class Main {
         trie.insert("care", 40);
         trie.insert("dog", 60);
 
-        // Normal prefix suggestions
-        List<String> suggestions = trie.getSuggestions("ca");
-        System.out.println("Suggestions for 'ca': " + suggestions);
+        System.out.println("--- Normal cases ---");
+        System.out.println("Suggestions for 'ca': " + trie.getSuggestions("ca"));
+        System.out.println("Fuzzy for 'acr': " + trie.getFuzzySuggestions("acr", 2));
 
-        // Fuzzy/typo suggestions
-        List<String> fuzzy = trie.getFuzzySuggestions("acr", 2);
-        System.out.println("Fuzzy suggestions for 'acr' (typo of 'car'): " + fuzzy);
+        System.out.println("\n--- Edge cases ---");
 
-        List<String> fuzzy2 = trie.getFuzzySuggestions("dawg", 2);
-        System.out.println("Fuzzy suggestions for 'dawg' (typo of 'dog'): " + fuzzy2);
+        // Case sensitivity check
+        System.out.println("Suggestions for 'Ca' (capital C): " + trie.getSuggestions("Ca"));
+
+        // Empty input
+        System.out.println("Suggestions for '' (empty): " + trie.getSuggestions(""));
+
+        // No match at all
+        System.out.println("Suggestions for 'xyz': " + trie.getSuggestions("xyz"));
+        System.out.println("Suggestions for 'Ca' (capital C): " + trie.getSuggestions("Ca"));
+        System.out.println("Suggestions for '' (empty): " + trie.getSuggestions(""));
+        // Fuzzy with no close match
+        System.out.println("Fuzzy for 'xyz' (distance 2): " + trie.getFuzzySuggestions("xyz", 2));
     }
 }

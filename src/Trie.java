@@ -10,6 +10,7 @@ public class Trie {
     }
 
     public void insert(String word, int freq) {
+        word = word.toLowerCase();  // normalize karo
         TrieNode current = root;
         for (char ch : word.toCharArray()) {
             current = current.children.computeIfAbsent(ch, c -> new TrieNode());
@@ -19,22 +20,25 @@ public class Trie {
     }
 
     public boolean search(String word) {
+        word = word.toLowerCase();  // normalize karo
         TrieNode node = findNode(word);
         return node != null && node.endOfWord;
     }
 
     // Ab yeh frequency ke hisaab se SORTED list return karega
     public List<String> getSuggestions(String prefix) {
+        if (prefix == null || prefix.isEmpty()) {
+            return new ArrayList<>();  // khaali input pe khaali result
+        }
+        prefix = prefix.toLowerCase();  // normalize karo
+
         List<WordFreq> results = new ArrayList<>();
         TrieNode node = findNode(prefix);
         if (node == null) return new ArrayList<>();
 
         collectWords(node, prefix, results);
-
-        // Frequency ke basis pe descending order mein sort karo
         results.sort(Comparator.comparingInt((WordFreq wf) -> wf.freq).reversed());
 
-        // Sirf words nikaal ke return karo (frequency ab UI ko dikhani nahi)
         List<String> sortedWords = new ArrayList<>();
         for (WordFreq wf : results) {
             sortedWords.add(wf.word);
