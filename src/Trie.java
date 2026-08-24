@@ -70,4 +70,29 @@ public class Trie {
             this.freq = freq;
         }
     }
+
+    // Poori trie ke saare words nikalne ke liye (fuzzy match ke liye chahiye)
+    private void collectAllWords(TrieNode node, String prefix, List<String> allWords) {
+        if (node.endOfWord) {
+            allWords.add(prefix);
+        }
+        for (char ch : node.children.keySet()) {
+            collectAllWords(node.children.get(ch), prefix + ch, allWords);
+        }
+    }
+
+    // Typo-tolerant suggestions — Levenshtein Distance use karke
+    public List<String> getFuzzySuggestions(String input, int maxDistance) {
+        List<String> allWords = new ArrayList<>();
+        collectAllWords(root, "", allWords);  // root se poori tree explore karo
+
+        List<String> fuzzyMatches = new ArrayList<>();
+        for (String word : allWords) {
+            int distance = LevenshteinTest.calculateDistance(input, word);
+            if (distance <= maxDistance) {
+                fuzzyMatches.add(word);
+            }
+        }
+        return fuzzyMatches;
+    }
 }
