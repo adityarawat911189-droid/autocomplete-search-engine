@@ -67,7 +67,7 @@ public class Trie {
     }
 
     // Chhota helper class — word aur uski frequency ek saath store karne ke liye
-    private static class WordFreq {
+    static class WordFreq {
         String word;
         int freq;
 
@@ -100,5 +100,39 @@ public class Trie {
             }
         }
         return fuzzyMatches;
+    }
+
+    // Personalized suggestions - database se personal frequency fetch karke
+    public List<String> getPersonalizedSuggestions(String prefix, String userId, UserClickRepository repo) {
+        if (prefix == null || prefix.isEmpty()) {
+            return new ArrayList<>();
+        }
+        prefix = prefix.toLowerCase();
+
+        TrieNode node = findNode(prefix);
+        if (node == null) return new ArrayList<>();
+
+        List<WordFreq> results = new ArrayList<>();
+        collectWords(node, prefix, results);
+
+        results.sort((a, b) -> {
+            int personalA = repo.findByUserIdAndWord(userId, a.word)
+                    .map(UserClick::getClickCount)
+                    .orElse(0);
+            int personalB = repo.findByUserIdAndWord(userId, b.word)
+                    .map(UserClick::getClickCount)
+                    .orElse(0);
+
+            double scoreA = (0.6 * a.freq) + (0.4 * personalA * 10);
+            double scoreB = (0.6 * b.freq) + (0.4 * personalB * 10);
+
+            return Double.compare(scoreB, scoreA);
+        });
+
+        List<String> sortedWords = new ArrayList<>();
+        for (WordFreq wf : results) {
+            sortedWords.add(wf.word);
+        }
+        return sortedWords;
     }
 }
