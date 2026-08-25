@@ -12,7 +12,6 @@ public class AutocompleteService {
     @PostConstruct
     public void init() {
         trie = new Trie();
-        // Sample data - baad mein isko dataset se load karenge
         trie.insert("cat", 50);
         trie.insert("car", 80);
         trie.insert("card", 30);
@@ -22,5 +21,9 @@ public class AutocompleteService {
 
     public List<String> getSuggestions(String prefix) {
         return trie.getSuggestions(prefix);
+    }
+
+    public List<String> getFuzzySuggestions(String input, int maxDistance) {
+        return trie.getFuzzySuggestions(input, maxDistance);
     }
 }

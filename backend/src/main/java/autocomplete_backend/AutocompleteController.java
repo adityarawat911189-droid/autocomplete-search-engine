@@ -18,4 +18,11 @@ public class AutocompleteController {
     public List<String> suggest(@RequestParam String q) {
         return autocompleteService.getSuggestions(q);
     }
+
+    @GetMapping("/api/suggest/fuzzy")
+    public List<String> fuzzySuggest(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "2") int maxDistance) {
+        return autocompleteService.getFuzzySuggestions(q, maxDistance);
+    }
 }
